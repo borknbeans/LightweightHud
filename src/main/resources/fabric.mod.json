@@ -1,17 +1,16 @@
 {
 	"schemaVersion": 1,
 	"id": "lightweight-hud",
-	"version": "${version}",
+	"version": "1.0.0",
 	"name": "Lightweight HUD",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Lightweight HUD additions with no extra fluff",
 	"authors": [
 		"BorknBeans"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/borknbeans/LightweightHud"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/lightweight-hud/icon.png",
 	"environment": "*",
 	"entrypoints": {

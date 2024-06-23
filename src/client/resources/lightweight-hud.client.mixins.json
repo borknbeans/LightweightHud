@@ -3,7 +3,7 @@
 	"package": "borknbeans.lightweighthud.mixin.client",
 	"compatibilityLevel": "JAVA_21",
 	"client": [
-		"ExampleClientMixin"
+		"MixinInGameHud"
 	],
 	"injectors": {
 		"defaultRequire": 1
