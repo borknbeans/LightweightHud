@@ -1,11 +1,17 @@
 package borknbeans.lightweighthud.mixin.client;
 
+import borknbeans.lightweighthud.GuiPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.render.RenderTickCounter;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ToolItem;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -13,56 +19,54 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(InGameHud.class)
 public abstract class MixinInGameHud {
 
+    private final int TEXT_SPACING = 2;
+
     @Inject(method = "renderHotbar", at = @At("RETURN"))
     private void renderHotbar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        // GuiPosition guiPosition = GuiPosition.TOP_LEFT;
+        GuiPosition guiPosition = GuiPosition.TOP_RIGHT;
         MinecraftClient client = MinecraftClient.getInstance();
 
         ItemStack stack = client.player.getMainHandStack();
 
         if (!stack.isEmpty()) {
-            // TODO: Count all of the same item in the inventory
-            int itemCount = stack.getCount();
+            int[] guiCoordinates = guiPosition.getCoordinates(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight());
 
-            // TODO: Change drawing coordinates and what is drawn depending on type of stack in hand i.e. tool vs block
-            int[] guiCoordinates = new int[] {0, 0}; // guiPosition.getCoordinates(client.getWindow().getWidth(), client.getWindow().getHeight());
+            if (isBlock(stack)) {
+                int itemCount = howManyOfThisItem(stack);
+                String count = String.valueOf(itemCount);
+
+                int textWidth = client.textRenderer.getWidth(count);
+                guiCoordinates[0] = guiCoordinates[0] == 0 ? 0 : guiCoordinates[0] - textWidth - TEXT_SPACING;
+
+                context.drawText(client.textRenderer, count, guiCoordinates[0] + 16 + TEXT_SPACING, guiCoordinates[1] + 4, 0xFFFFFF, true);
+            }
+
             context.drawItem(stack, guiCoordinates[0], guiCoordinates[1]);
-            context.drawText(client.textRenderer, String.valueOf(itemCount), 20, 4, 0xFFFFFF, true);
         }
     }
-}
 
-// TODO: Move ENUM outside of Mixin class
-/*
-enum GuiPosition {
-    TOP_LEFT,
-    TOP_RIGHT,
-    BOTTOM_RIGHT,
-    BOTTOM_LEFT;
+    private int howManyOfThisItem(ItemStack stack) {
+        int count = 0;
 
-    public int[] getCoordinates(int screenWidth, int screenHeight) {
-        int x = 0, y = 0;
+        MinecraftClient client = MinecraftClient.getInstance();
+        PlayerInventory inventory = client.player.getInventory();
 
-        switch (this) {
-            case TOP_LEFT:
-                x = 0;
-                y = 0;
-                break;
-            case TOP_RIGHT:
-                x = screenWidth;
-                y = 0;
-                break;
-            case BOTTOM_RIGHT:
-                x = screenWidth;
-                y = screenHeight;
-                break;
-            case BOTTOM_LEFT:
-                x = 0;
-                y = screenHeight;
-                break;
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack s = inventory.getStack(i);
+
+            if (s.getItem() == stack.getItem()) {
+                count += s.getCount();
+            }
         }
 
-        return new int[] {x, y};
+        return count;
+    }
+
+    private boolean isBlock(ItemStack stack) {
+        return stack.getItem() instanceof BlockItem;
+    }
+
+    private boolean isTool(ItemStack stack) {
+        return stack.getItem() instanceof ToolItem;
     }
 }
-*/
