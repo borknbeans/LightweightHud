@@ -21,6 +21,14 @@ public abstract class MixinInGameHud {
 
     private final int TEXT_SPACING = 2;
 
+    private final float SLIGHT_DAMAGE_THRESHOLD = 0.5f;
+    private final float HIGH_DAMAGE_THRESHOLD = 0.15f;
+    private final float VERY_HIGH_DAMAGE_THRESHOLD = 0.05f;
+
+    private final int SLIGHT_DAMAGE_COLOR = 0xFFFF55;
+    private final int HIGH_DAMAGE_COLOR = 0xFF5555;
+    private final int VERY_HIGH_DAMAGE_COLOR = 0xAA0000;
+
     @Inject(method = "renderHotbar", at = @At("RETURN"))
     private void renderHotbar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
         GuiPosition guiPosition = GuiPosition.TOP_RIGHT;
@@ -39,6 +47,17 @@ public abstract class MixinInGameHud {
                 guiCoordinates[0] = guiCoordinates[0] == 0 ? 0 : guiCoordinates[0] - textWidth - TEXT_SPACING;
 
                 context.drawText(client.textRenderer, count, guiCoordinates[0] + 16 + TEXT_SPACING, guiCoordinates[1] + 4, 0xFFFFFF, true);
+            } else if (isTool(stack)) {
+                int maxDurability = stack.getMaxDamage();
+                int remainingDurability = maxDurability - stack.getDamage();
+                float durabilityPercentage = (float) remainingDurability / maxDurability;
+
+                String durability = remainingDurability + "/" + maxDurability;
+
+                int textWidth = client.textRenderer.getWidth(durability);
+                guiCoordinates[0] = guiCoordinates[0] == 0 ? 0 : guiCoordinates[0] - textWidth - TEXT_SPACING;
+
+                context.drawText(client.textRenderer, durability, guiCoordinates[0] + 16 + TEXT_SPACING, guiCoordinates[1] + 4, decideDamageColor(durabilityPercentage), true);
             }
 
             context.drawItem(stack, guiCoordinates[0], guiCoordinates[1]);
@@ -68,5 +87,17 @@ public abstract class MixinInGameHud {
 
     private boolean isTool(ItemStack stack) {
         return stack.getItem() instanceof ToolItem;
+    }
+
+    private int decideDamageColor(float durabilityPercentage) {
+        if (durabilityPercentage < VERY_HIGH_DAMAGE_THRESHOLD) {
+            return VERY_HIGH_DAMAGE_COLOR;
+        } else if (durabilityPercentage < HIGH_DAMAGE_THRESHOLD) {
+            return HIGH_DAMAGE_COLOR;
+        } else if (durabilityPercentage < SLIGHT_DAMAGE_THRESHOLD) {
+            return SLIGHT_DAMAGE_COLOR;
+        }
+
+        return 0xFFFFFF;
     }
 }
