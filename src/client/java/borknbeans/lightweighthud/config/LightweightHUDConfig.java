@@ -13,6 +13,7 @@ public class LightweightHUDConfig {
     private static final File CONFIG_FILE = new File(FabricLoader.getInstance().getConfigDir().toFile(), "lightweight-hud.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
+    // Held Item Settings
     public static boolean showHeldItem = true;
     public static GuiPosition heldItemGuiPosition = GuiPosition.BOTTOM_LEFT;
     public static boolean drawBlockCount = true;
@@ -27,10 +28,20 @@ public class LightweightHUDConfig {
     public static int heldItemHighDamageThreshold = 15;
     public static int heldItemVeryHighDamageThreshold = 5;
 
+    // Navigation Settings
+    public static boolean showPlayerPosition = false;
+    public static boolean showPlayerChunk = false;
+    public static boolean showPlayerDirection = false;
+    public static GuiPosition playerPositionGuiPosition = GuiPosition.TOP_LEFT;
+    public static int playerNavigationXOffset = 0;
+    public static int playerNavigationYOffset = 0;
+
     public static void load() {
         if (CONFIG_FILE.exists()) {
             try (FileReader reader = new FileReader(CONFIG_FILE)) {
                 ConfigData data = GSON.fromJson(reader, ConfigData.class);
+
+                // Held Items
                 showHeldItem = data.showHeldItem;
                 heldItemGuiPosition = data.heldItemGuiPosition;
                 drawBlockCount = data.drawBlockCount;
@@ -44,6 +55,14 @@ public class LightweightHUDConfig {
                 heldItemSlightDamageThreshold = data.heldItemSlightDamageThreshold;
                 heldItemHighDamageThreshold = data.heldItemHighDamageThreshold;
                 heldItemVeryHighDamageThreshold = data.heldItemVeryHighDamageThreshold;
+
+                // Navigation
+                showPlayerPosition = data.showPlayerPosition;
+                showPlayerChunk = data.showPlayerChunk;
+                showPlayerDirection = data.showPlayerDirection;
+                playerPositionGuiPosition = data.playerPositionGuiPosition;
+                playerNavigationXOffset = data.heldItemXOffset;
+                playerNavigationYOffset = data.heldItemYOffset;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -53,6 +72,8 @@ public class LightweightHUDConfig {
     public static void save() {
         try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
             ConfigData data = new ConfigData();
+
+            // Held Items
             data.showHeldItem = showHeldItem;
             data.heldItemGuiPosition = heldItemGuiPosition;
             data.drawBlockCount = drawBlockCount;
@@ -66,6 +87,15 @@ public class LightweightHUDConfig {
             data.heldItemSlightDamageThreshold = heldItemSlightDamageThreshold;
             data.heldItemHighDamageThreshold = heldItemHighDamageThreshold;
             data.heldItemVeryHighDamageThreshold = heldItemVeryHighDamageThreshold;
+
+            // Navigation
+            data.showPlayerPosition = showPlayerPosition;
+            data.showPlayerChunk = showPlayerChunk;
+            data.showPlayerDirection = showPlayerDirection;
+            data.playerPositionGuiPosition = playerPositionGuiPosition;
+            data.playerNavigationXOffset = playerNavigationXOffset;
+            data.playerNavigationYOffset = playerNavigationYOffset;
+
             GSON.toJson(data, writer);
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,6 +103,7 @@ public class LightweightHUDConfig {
     }
 
     private static class ConfigData {
+        // Held Items
         boolean showHeldItem;
         GuiPosition heldItemGuiPosition;
         boolean drawBlockCount;
@@ -86,5 +117,13 @@ public class LightweightHUDConfig {
         int heldItemSlightDamageThreshold;
         int heldItemHighDamageThreshold;
         int heldItemVeryHighDamageThreshold;
+
+        // Navigation
+        boolean showPlayerPosition;
+        boolean showPlayerChunk;
+        boolean showPlayerDirection;
+        GuiPosition playerPositionGuiPosition;
+        int playerNavigationXOffset;
+        int playerNavigationYOffset;
     }
 }

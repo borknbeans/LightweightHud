@@ -24,6 +24,8 @@ public class ModMenu implements ModMenuApi {
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
         heldItemSettings(builder, entryBuilder);
+        navigationSettings(builder, entryBuilder);
+
 
         builder.setSavingRunnable(() -> LightweightHUDConfig.save());
 
@@ -47,7 +49,7 @@ public class ModMenu implements ModMenuApi {
                         Text.translatable("GUI Position"),
                         GuiPosition.class,
                         LightweightHUDConfig.heldItemGuiPosition
-                ).setDefaultValue(GuiPosition.TOP_LEFT)
+                ).setDefaultValue(GuiPosition.BOTTOM_LEFT)
                 .setSaveConsumer(newValue -> LightweightHUDConfig.heldItemGuiPosition = newValue)
                 .build());
 
@@ -143,6 +145,58 @@ public class ModMenu implements ModMenuApi {
                 ).setDefaultValue(5)
                 .setTooltip(Text.translatable("Percentage at which point this color will be used"))
                 .setSaveConsumer(newValue -> LightweightHUDConfig.heldItemVeryHighDamageThreshold = newValue)
+                .build());
+    }
+
+    private void navigationSettings(ConfigBuilder builder, ConfigEntryBuilder entryBuilder) {
+        ConfigCategory navigationSettings = builder.getOrCreateCategory(Text.of("Navigation Settings"));
+
+        navigationSettings.addEntry(entryBuilder.startBooleanToggle(
+                        Text.translatable("Show Player Coordinates"),
+                        LightweightHUDConfig.showPlayerPosition
+                ).setDefaultValue(false)
+                .setSaveConsumer(newValue -> LightweightHUDConfig.showPlayerPosition = newValue)
+                .build());
+
+        navigationSettings.addEntry(entryBuilder.startBooleanToggle(
+                        Text.translatable("Show Player Chunk"),
+                        LightweightHUDConfig.showPlayerChunk
+                ).setDefaultValue(false)
+                .setSaveConsumer(newValue -> LightweightHUDConfig.showPlayerChunk = newValue)
+                .build());
+
+        navigationSettings.addEntry(entryBuilder.startBooleanToggle(
+                        Text.translatable("Show Direction"),
+                        LightweightHUDConfig.showPlayerDirection
+                ).setDefaultValue(false)
+                .setSaveConsumer(newValue -> LightweightHUDConfig.showPlayerDirection = newValue)
+                .build());
+
+        navigationSettings.addEntry(entryBuilder.startTextDescription(Text.literal("Coordinates Placement").formatted(Formatting.BOLD))
+                .build());
+
+        navigationSettings.addEntry(entryBuilder.startEnumSelector(
+                        Text.translatable("GUI Position"),
+                        GuiPosition.class,
+                        LightweightHUDConfig.playerPositionGuiPosition
+                ).setDefaultValue(GuiPosition.TOP_LEFT)
+                .setSaveConsumer(newValue -> LightweightHUDConfig.playerPositionGuiPosition = newValue)
+                .build());
+
+        navigationSettings.addEntry(entryBuilder.startIntField(
+                        Text.translatable("X Offset"),
+                        LightweightHUDConfig.playerNavigationXOffset
+                ).setDefaultValue(0)
+                .setSaveConsumer(newValue -> LightweightHUDConfig.playerNavigationXOffset = newValue)
+                .setTooltip(Text.translatable("Move the HUD on the x-axis\nPOSITIVE: Right\nNEGATIVE: Left"))
+                .build());
+
+        navigationSettings.addEntry(entryBuilder.startIntField(
+                        Text.translatable("Y Offset"),
+                        LightweightHUDConfig.playerNavigationYOffset
+                ).setDefaultValue(0)
+                .setSaveConsumer(newValue -> LightweightHUDConfig.playerNavigationYOffset = newValue)
+                .setTooltip(Text.translatable("Move the HUD on the y-axis\nPOSITIVE: Down\nNEGATIVE: Up"))
                 .build());
     }
 }

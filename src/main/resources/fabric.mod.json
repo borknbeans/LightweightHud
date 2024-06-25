@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "lightweight-hud",
-	"version": "1.0.0",
+	"version": "1.0.0-alpha",
 	"name": "Lightweight HUD",
 	"description": "Lightweight HUD additions with no extra fluff",
 	"authors": [
