@@ -110,4 +110,12 @@ public abstract class MixinInGameHud {
 
         return 0x000000;
     }
+
+    private void renderNavigation(DrawContext context) {
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        // client.player.getPos();
+        // client.player.getMovementDirection() ?
+        // client.player.getChunkPos();
+    }
 }
