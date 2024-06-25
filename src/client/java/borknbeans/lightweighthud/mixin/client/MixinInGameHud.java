@@ -22,7 +22,7 @@ public abstract class MixinInGameHud {
 
     @Inject(method = "renderHotbar", at = @At("RETURN"))
     private void renderHotbar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
-        
+
         if (LightweightHUDConfig.showHeldItem) { // Held Item
             renderHeldItem(context);
         }

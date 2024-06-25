@@ -23,6 +23,14 @@ public class ModMenu implements ModMenuApi {
 
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
+        heldItemSettings(builder, entryBuilder);
+
+        builder.setSavingRunnable(() -> LightweightHUDConfig.save());
+
+        return builder.build();
+    }
+
+    private void heldItemSettings(ConfigBuilder builder, ConfigEntryBuilder entryBuilder) {
         ConfigCategory heldItemSettings = builder.getOrCreateCategory(Text.of("Held Item Settings"));
 
         heldItemSettings.addEntry(entryBuilder.startBooleanToggle(
@@ -136,10 +144,5 @@ public class ModMenu implements ModMenuApi {
                 .setTooltip(Text.translatable("Percentage at which point this color will be used"))
                 .setSaveConsumer(newValue -> LightweightHUDConfig.heldItemVeryHighDamageThreshold = newValue)
                 .build());
-
-
-        builder.setSavingRunnable(() -> LightweightHUDConfig.save());
-
-        return builder.build();
     }
 }
