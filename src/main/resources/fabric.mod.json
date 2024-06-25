@@ -20,7 +20,9 @@
 		"client": [
 			"borknbeans.lightweighthud.LightweightHUDClient"
 		],
-		"modmenu": [ "borknbeans.lightweighthud.ModMenu" ]
+		"modmenu": [
+			"borknbeans.lightweighthud.config.ModMenu"
+		]
 	},
 	"mixins": [
 		"lightweight-hud.mixins.json",

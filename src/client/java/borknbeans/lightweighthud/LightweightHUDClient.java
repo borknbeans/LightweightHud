@@ -1,5 +1,6 @@
 package borknbeans.lightweighthud;
 
+import borknbeans.lightweighthud.config.LightweightHUDConfig;
 import net.fabricmc.api.ClientModInitializer;
 
 public class LightweightHUDClient implements ClientModInitializer {
