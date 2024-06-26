@@ -17,16 +17,16 @@ public enum GuiPosition {
                 y = PADDING + yOffset;
                 break;
             case TOP_RIGHT:
-                x = screenWidth - 16 - PADDING + xOffset;
+                x = screenWidth - PADDING + xOffset;
                 y = PADDING + yOffset;
                 break;
             case BOTTOM_RIGHT:
-                x = screenWidth - 16 - PADDING  + xOffset;
-                y = screenHeight - 16 - PADDING + yOffset;
+                x = screenWidth - PADDING  + xOffset;
+                y = screenHeight - PADDING + yOffset;
                 break;
             case BOTTOM_LEFT:
                 x = PADDING  + xOffset;
-                y = screenHeight - 16 - PADDING + yOffset;
+                y = screenHeight - PADDING + yOffset;
                 break;
         }
 

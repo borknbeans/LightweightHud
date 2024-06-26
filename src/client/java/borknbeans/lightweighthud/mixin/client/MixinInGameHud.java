@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolItem;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,6 +27,10 @@ public abstract class MixinInGameHud {
         if (LightweightHUDConfig.showHeldItem) { // Held Item
             renderHeldItem(context);
         }
+
+        if (LightweightHUDConfig.showPlayerPosition) {
+            renderNavigation(context);
+        }
     }
 
     private void renderHeldItem(DrawContext context) {
@@ -39,30 +44,29 @@ public abstract class MixinInGameHud {
         GuiPosition guiPosition = LightweightHUDConfig.heldItemGuiPosition;
         int[] guiCoordinates = guiPosition.getCoordinates(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight(), LightweightHUDConfig.heldItemXOffset, LightweightHUDConfig.heldItemYOffset);
 
+        // TODO: This needs to be rewritten and cleaned up
         if (isBlock(stack) && LightweightHUDConfig.drawBlockCount) { // Draw Block count
             int itemCount = howManyOfThisItem(stack);
             String count = String.valueOf(itemCount);
 
-            int textWidth = client.textRenderer.getWidth(count);
-            guiCoordinates[0] = (guiPosition == GuiPosition.TOP_LEFT || guiPosition == GuiPosition.BOTTOM_LEFT) ? guiCoordinates[0] : guiCoordinates[0] - textWidth - TEXT_SPACING;
+            updateCoordinatesForTextSize(guiPosition, client.textRenderer.getWidth(count), client.textRenderer.fontHeight, guiCoordinates);
 
-            context.drawText(client.textRenderer, count, guiCoordinates[0] + 16 + TEXT_SPACING, guiCoordinates[1] + 4, 0xFFFFFF, true);
+            context.drawText(client.textRenderer, count, guiCoordinates[0], guiCoordinates[1], 0xFFFFFF, true);
         } else if (isTool(stack) && LightweightHUDConfig.drawToolDurability) { // Draw tool durability
             int maxDurability = stack.getMaxDamage();
             int remainingDurability = maxDurability - stack.getDamage();
             int durabilityPercentage = (int)(((float) remainingDurability / maxDurability) * 100);
 
-            String durability = "";
+            String durability;
             if (LightweightHUDConfig.drawToolDurabilityAsPercentage) { // Draw tool durability as percentage
                 durability = durabilityPercentage + "%";
             } else {
                 durability = remainingDurability + "/" + maxDurability;
             }
 
-            int textWidth = client.textRenderer.getWidth(durability);
-            guiCoordinates[0] = (guiPosition == GuiPosition.TOP_LEFT || guiPosition == GuiPosition.BOTTOM_LEFT) ? guiCoordinates[0] : guiCoordinates[0] - textWidth - TEXT_SPACING;
+            updateCoordinatesForTextSize(guiPosition, client.textRenderer.getWidth(durability), client.textRenderer.fontHeight, guiCoordinates);
 
-            context.drawText(client.textRenderer, durability, guiCoordinates[0] + 16 + TEXT_SPACING, guiCoordinates[1] + 4, decideHeldItemDamageColor(durabilityPercentage), true);
+            context.drawText(client.textRenderer, durability, guiCoordinates[0], guiCoordinates[1], decideHeldItemDamageColor(durabilityPercentage), true);
 
             // Tools have 2 pixel space at the top
             guiCoordinates[1] -= 1;
@@ -71,7 +75,33 @@ public abstract class MixinInGameHud {
             return;
         }
 
+        if (guiPosition == GuiPosition.TOP_RIGHT || guiPosition == GuiPosition.BOTTOM_RIGHT) {
+            guiCoordinates[0] -= 16 + TEXT_SPACING;
+        } else {
+            guiCoordinates[0] += TEXT_SPACING;
+        }
+
+        if (guiPosition == GuiPosition.BOTTOM_RIGHT || guiPosition == GuiPosition.BOTTOM_LEFT) {
+            guiCoordinates[1] -= 16 + TEXT_SPACING;
+        } else {
+            guiCoordinates[1] += TEXT_SPACING;
+        }
+
         context.drawItem(stack, guiCoordinates[0], guiCoordinates[1]);
+    }
+
+    private void updateCoordinatesForTextSize(GuiPosition guiPos, int width, int height, int[] coords) {
+        if (guiPos == GuiPosition.TOP_RIGHT || guiPos == GuiPosition.BOTTOM_RIGHT) {
+            coords[0] -= width + TEXT_SPACING;
+        } else {
+            coords[0] += TEXT_SPACING;
+        }
+
+        if (guiPos == GuiPosition.BOTTOM_RIGHT || guiPos == GuiPosition.BOTTOM_LEFT) {
+            coords[1] -= height + TEXT_SPACING;
+        } else {
+            coords[1] += TEXT_SPACING;
+        }
     }
 
     private int howManyOfThisItem(ItemStack stack) {
@@ -114,8 +144,16 @@ public abstract class MixinInGameHud {
     private void renderNavigation(DrawContext context) {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        // client.player.getPos();
+        GuiPosition guiPosition = LightweightHUDConfig.playerPositionGuiPosition;
+        int[] guiCoordinates = guiPosition.getCoordinates(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight(), LightweightHUDConfig.playerNavigationXOffset, LightweightHUDConfig.playerNavigationYOffset);
+
+        Vec3d coords = client.player.getPos();
+        String concatText = String.format("X: %.1f, Y: %.1f, Z: %.1f", coords.x, coords.y, coords.z);
+
+        updateCoordinatesForTextSize(guiPosition, client.textRenderer.getWidth(concatText), client.textRenderer.fontHeight, guiCoordinates);
+
+        context.drawText(client.textRenderer, concatText, guiCoordinates[0], guiCoordinates[1], 0xFFFFFF, true);
+
         // client.player.getMovementDirection() ?
-        // client.player.getChunkPos();
     }
 }
