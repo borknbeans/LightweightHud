@@ -1,10 +1,7 @@
 package borknbeans.lightweighthud.hud;
 
 import borknbeans.lightweighthud.config.HudPosition;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-
-import java.util.List;
 
 public class HudHelper {
     DrawContext context;
@@ -21,8 +18,6 @@ public class HudHelper {
     }
 
     public void drawHud() {
-        MinecraftClient client = MinecraftClient.getInstance();
-
         int[] startPosition = hudPosition.getCoordinates();
         int x = startPosition[0];
         int y = startPosition[1];
@@ -31,7 +26,6 @@ public class HudHelper {
             x -= getWidth();
         }
 
-        // TODO: Account for middle and move back by half?
         if (hudPosition.isOnMiddleHorizontal()) {
             x -= getWidth() / 2;
         }
@@ -43,8 +37,12 @@ public class HudHelper {
         for (int i = 0; i < hudObjects.length; i++) {
             HudObject hudObject = hudObjects[i];
 
+            if (hudObject.getHeight() != getHeight()) { // If one item is taller than others, center the others
+                y = y + (getHeight() / 2) - (hudObject.getHeight() / 2);
+            }
+
             hudObject.draw(context, x, y);
-            x += hudObject.getWidth();
+            x += hudObject.getWidth(); // Move right as we draw
         }
     }
 

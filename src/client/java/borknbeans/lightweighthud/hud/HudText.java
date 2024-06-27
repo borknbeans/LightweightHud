@@ -10,10 +10,6 @@ public class HudText implements HudObject {
         this.text = text;
     }
 
-    public String getText() {
-        return text;
-    }
-
     @Override
     public int getWidth() {
         return MinecraftClient.getInstance().textRenderer.getWidth(text);

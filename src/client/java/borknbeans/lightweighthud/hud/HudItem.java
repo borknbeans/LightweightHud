@@ -1,19 +1,15 @@
 package borknbeans.lightweighthud.hud;
 
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 public class HudItem implements HudObject {
     private final int ITEM_SIZE = 16;
 
-    private Item item;
+    private ItemStack stack;
 
-    public HudItem(Item item) {
-        this.item = item;
-    }
-
-    public Item getItem() {
-        return item;
+    public HudItem(ItemStack stack) {
+        this.stack = stack;
     }
 
     @Override
@@ -23,11 +19,11 @@ public class HudItem implements HudObject {
 
     @Override
     public int getHeight() {
-        return ITEM_SIZE;
+        return getWidth();
     }
 
     @Override
     public void draw(DrawContext context, int x, int y) {
-
+        context.drawItem(stack, x, y);
     }
 }
