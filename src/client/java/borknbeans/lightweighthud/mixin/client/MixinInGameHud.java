@@ -1,7 +1,11 @@
 package borknbeans.lightweighthud.mixin.client;
 
-import borknbeans.lightweighthud.config.GuiPosition;
+import borknbeans.lightweighthud.config.HudPosition;
 import borknbeans.lightweighthud.config.LightweightHUDConfig;
+import borknbeans.lightweighthud.hud.HudHelper;
+import borknbeans.lightweighthud.hud.HudItem;
+import borknbeans.lightweighthud.hud.HudObject;
+import borknbeans.lightweighthud.hud.HudText;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -16,6 +20,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.List;
+
 @Mixin(InGameHud.class)
 public abstract class MixinInGameHud {
 
@@ -23,7 +29,20 @@ public abstract class MixinInGameHud {
 
     @Inject(method = "renderHotbar", at = @At("RETURN"))
     private void renderHotbar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        Vec3d playerPos = client.player.getPos();
+        String formattedPos = String.format("X: %.1f, Y: %.1f, Z: %.1f", playerPos.x, playerPos.y, playerPos.z);
 
+        HudObject[] hudObjects = {
+                new HudText(formattedPos)
+        };
+
+
+        HudHelper hudHelper = new HudHelper(context, LightweightHUDConfig.playerPositionHudPosition, hudObjects);
+
+        hudHelper.drawHud();
+
+        /*
         if (LightweightHUDConfig.showHeldItem) { // Held Item
             renderHeldItem(context);
         }
@@ -31,8 +50,10 @@ public abstract class MixinInGameHud {
         if (LightweightHUDConfig.showPlayerPosition) {
             renderNavigation(context);
         }
+         */
     }
 
+    /*
     private void renderHeldItem(DrawContext context) {
         MinecraftClient client = MinecraftClient.getInstance();
         ItemStack stack = client.player.getMainHandStack();
@@ -41,15 +62,15 @@ public abstract class MixinInGameHud {
             return;
         }
 
-        GuiPosition guiPosition = LightweightHUDConfig.heldItemGuiPosition;
-        int[] guiCoordinates = guiPosition.getCoordinates(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight(), LightweightHUDConfig.heldItemXOffset, LightweightHUDConfig.heldItemYOffset);
+        HudPosition hudPosition = LightweightHUDConfig.heldItemHudPosition;
+        int[] guiCoordinates = hudPosition.getCoordinates(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight(), LightweightHUDConfig.heldItemXOffset, LightweightHUDConfig.heldItemYOffset);
 
         // TODO: This needs to be rewritten and cleaned up
         if (isBlock(stack) && LightweightHUDConfig.drawBlockCount) { // Draw Block count
             int itemCount = howManyOfThisItem(stack);
             String count = String.valueOf(itemCount);
 
-            updateCoordinatesForTextSize(guiPosition, client.textRenderer.getWidth(count), client.textRenderer.fontHeight, guiCoordinates);
+            updateCoordinatesForTextSize(hudPosition, client.textRenderer.getWidth(count), client.textRenderer.fontHeight, guiCoordinates);
 
             context.drawText(client.textRenderer, count, guiCoordinates[0], guiCoordinates[1], 0xFFFFFF, true);
         } else if (isTool(stack) && LightweightHUDConfig.drawToolDurability) { // Draw tool durability
@@ -64,7 +85,7 @@ public abstract class MixinInGameHud {
                 durability = remainingDurability + "/" + maxDurability;
             }
 
-            updateCoordinatesForTextSize(guiPosition, client.textRenderer.getWidth(durability), client.textRenderer.fontHeight, guiCoordinates);
+            updateCoordinatesForTextSize(hudPosition, client.textRenderer.getWidth(durability), client.textRenderer.fontHeight, guiCoordinates);
 
             context.drawText(client.textRenderer, durability, guiCoordinates[0], guiCoordinates[1], decideHeldItemDamageColor(durabilityPercentage), true);
 
@@ -75,13 +96,13 @@ public abstract class MixinInGameHud {
             return;
         }
 
-        if (guiPosition == GuiPosition.TOP_RIGHT || guiPosition == GuiPosition.BOTTOM_RIGHT) {
+        if (hudPosition == HudPosition.TOP_RIGHT || hudPosition == HudPosition.BOTTOM_RIGHT) {
             guiCoordinates[0] -= 16 + TEXT_SPACING;
         } else {
             guiCoordinates[0] += TEXT_SPACING;
         }
 
-        if (guiPosition == GuiPosition.BOTTOM_RIGHT || guiPosition == GuiPosition.BOTTOM_LEFT) {
+        if (hudPosition == HudPosition.BOTTOM_RIGHT || hudPosition == HudPosition.BOTTOM_LEFT) {
             guiCoordinates[1] -= 16 + TEXT_SPACING;
         } else {
             guiCoordinates[1] += TEXT_SPACING;
@@ -90,14 +111,14 @@ public abstract class MixinInGameHud {
         context.drawItem(stack, guiCoordinates[0], guiCoordinates[1]);
     }
 
-    private void updateCoordinatesForTextSize(GuiPosition guiPos, int width, int height, int[] coords) {
-        if (guiPos == GuiPosition.TOP_RIGHT || guiPos == GuiPosition.BOTTOM_RIGHT) {
+    private void updateCoordinatesForTextSize(HudPosition guiPos, int width, int height, int[] coords) {
+        if (guiPos == HudPosition.TOP_RIGHT || guiPos == HudPosition.BOTTOM_RIGHT) {
             coords[0] -= width + TEXT_SPACING;
         } else {
             coords[0] += TEXT_SPACING;
         }
 
-        if (guiPos == GuiPosition.BOTTOM_RIGHT || guiPos == GuiPosition.BOTTOM_LEFT) {
+        if (guiPos == HudPosition.BOTTOM_RIGHT || guiPos == HudPosition.BOTTOM_LEFT) {
             coords[1] -= height + TEXT_SPACING;
         } else {
             coords[1] += TEXT_SPACING;
@@ -144,16 +165,17 @@ public abstract class MixinInGameHud {
     private void renderNavigation(DrawContext context) {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        GuiPosition guiPosition = LightweightHUDConfig.playerPositionGuiPosition;
-        int[] guiCoordinates = guiPosition.getCoordinates(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight(), LightweightHUDConfig.playerNavigationXOffset, LightweightHUDConfig.playerNavigationYOffset);
+        HudPosition hudPosition = LightweightHUDConfig.playerPositionHudPosition;
+        int[] guiCoordinates = hudPosition.getCoordinates(client.getWindow().getScaledWidth(), client.getWindow().getScaledHeight(), LightweightHUDConfig.playerNavigationXOffset, LightweightHUDConfig.playerNavigationYOffset);
 
         Vec3d coords = client.player.getPos();
         String concatText = String.format("X: %.1f, Y: %.1f, Z: %.1f", coords.x, coords.y, coords.z);
 
-        updateCoordinatesForTextSize(guiPosition, client.textRenderer.getWidth(concatText), client.textRenderer.fontHeight, guiCoordinates);
+        updateCoordinatesForTextSize(hudPosition, client.textRenderer.getWidth(concatText), client.textRenderer.fontHeight, guiCoordinates);
 
         context.drawText(client.textRenderer, concatText, guiCoordinates[0], guiCoordinates[1], 0xFFFFFF, true);
 
         // client.player.getMovementDirection() ?
     }
+     */
 }

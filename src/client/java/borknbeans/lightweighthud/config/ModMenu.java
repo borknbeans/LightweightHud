@@ -47,10 +47,10 @@ public class ModMenu implements ModMenuApi {
 
         heldItemSettings.addEntry(entryBuilder.startEnumSelector(
                         Text.translatable("GUI Position"),
-                        GuiPosition.class,
-                        LightweightHUDConfig.heldItemGuiPosition
-                ).setDefaultValue(GuiPosition.BOTTOM_LEFT)
-                .setSaveConsumer(newValue -> LightweightHUDConfig.heldItemGuiPosition = newValue)
+                        HudPosition.class,
+                        LightweightHUDConfig.heldItemHudPosition
+                ).setDefaultValue(HudPosition.BOTTOM_LEFT)
+                .setSaveConsumer(newValue -> LightweightHUDConfig.heldItemHudPosition = newValue)
                 .build());
 
         heldItemSettings.addEntry(entryBuilder.startIntField(
@@ -177,10 +177,10 @@ public class ModMenu implements ModMenuApi {
 
         navigationSettings.addEntry(entryBuilder.startEnumSelector(
                         Text.translatable("GUI Position"),
-                        GuiPosition.class,
-                        LightweightHUDConfig.playerPositionGuiPosition
-                ).setDefaultValue(GuiPosition.TOP_LEFT)
-                .setSaveConsumer(newValue -> LightweightHUDConfig.playerPositionGuiPosition = newValue)
+                        HudPosition.class,
+                        LightweightHUDConfig.playerPositionHudPosition
+                ).setDefaultValue(HudPosition.TOP_LEFT)
+                .setSaveConsumer(newValue -> LightweightHUDConfig.playerPositionHudPosition = newValue)
                 .build());
 
         navigationSettings.addEntry(entryBuilder.startIntField(

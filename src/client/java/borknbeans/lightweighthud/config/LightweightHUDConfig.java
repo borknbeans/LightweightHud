@@ -15,7 +15,7 @@ public class LightweightHUDConfig {
 
     // Held Item Settings
     public static boolean showHeldItem = true;
-    public static GuiPosition heldItemGuiPosition = GuiPosition.BOTTOM_LEFT;
+    public static HudPosition heldItemHudPosition = HudPosition.BOTTOM_LEFT;
     public static boolean drawBlockCount = true;
     public static boolean drawToolDurability = true;
     public static boolean drawToolDurabilityAsPercentage = true;
@@ -32,7 +32,7 @@ public class LightweightHUDConfig {
     public static boolean showPlayerPosition = false;
     public static boolean showPlayerChunk = false;
     public static boolean showPlayerDirection = false;
-    public static GuiPosition playerPositionGuiPosition = GuiPosition.TOP_LEFT;
+    public static HudPosition playerPositionHudPosition = HudPosition.TOP_LEFT;
     public static int playerNavigationXOffset = 0;
     public static int playerNavigationYOffset = 0;
 
@@ -43,7 +43,7 @@ public class LightweightHUDConfig {
 
                 // Held Items
                 showHeldItem = data.showHeldItem;
-                heldItemGuiPosition = data.heldItemGuiPosition;
+                heldItemHudPosition = data.heldItemHudPosition;
                 drawBlockCount = data.drawBlockCount;
                 drawToolDurability = data.drawToolDurability;
                 drawToolDurabilityAsPercentage = data.drawToolDurabilityAsPercentage;
@@ -60,7 +60,7 @@ public class LightweightHUDConfig {
                 showPlayerPosition = data.showPlayerPosition;
                 showPlayerChunk = data.showPlayerChunk;
                 showPlayerDirection = data.showPlayerDirection;
-                playerPositionGuiPosition = data.playerPositionGuiPosition;
+                playerPositionHudPosition = data.playerPositionHudPosition;
                 playerNavigationXOffset = data.heldItemXOffset;
                 playerNavigationYOffset = data.heldItemYOffset;
             } catch (IOException e) {
@@ -75,7 +75,7 @@ public class LightweightHUDConfig {
 
             // Held Items
             data.showHeldItem = showHeldItem;
-            data.heldItemGuiPosition = heldItemGuiPosition;
+            data.heldItemHudPosition = heldItemHudPosition;
             data.drawBlockCount = drawBlockCount;
             data.drawToolDurability = drawToolDurability;
             data.drawToolDurabilityAsPercentage = drawToolDurabilityAsPercentage;
@@ -92,7 +92,7 @@ public class LightweightHUDConfig {
             data.showPlayerPosition = showPlayerPosition;
             data.showPlayerChunk = showPlayerChunk;
             data.showPlayerDirection = showPlayerDirection;
-            data.playerPositionGuiPosition = playerPositionGuiPosition;
+            data.playerPositionHudPosition = playerPositionHudPosition;
             data.playerNavigationXOffset = playerNavigationXOffset;
             data.playerNavigationYOffset = playerNavigationYOffset;
 
@@ -105,7 +105,7 @@ public class LightweightHUDConfig {
     private static class ConfigData {
         // Held Items
         boolean showHeldItem;
-        GuiPosition heldItemGuiPosition;
+        HudPosition heldItemHudPosition;
         boolean drawBlockCount;
         boolean drawToolDurability;
         boolean drawToolDurabilityAsPercentage;
@@ -122,7 +122,7 @@ public class LightweightHUDConfig {
         boolean showPlayerPosition;
         boolean showPlayerChunk;
         boolean showPlayerDirection;
-        GuiPosition playerPositionGuiPosition;
+        HudPosition playerPositionHudPosition;
         int playerNavigationXOffset;
         int playerNavigationYOffset;
     }
