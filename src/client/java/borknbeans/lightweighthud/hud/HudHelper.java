@@ -3,17 +3,19 @@ package borknbeans.lightweighthud.hud;
 import borknbeans.lightweighthud.config.HudPosition;
 import net.minecraft.client.gui.DrawContext;
 
+import java.util.List;
+
 public class HudHelper {
     DrawContext context;
 
     HudPosition hudPosition;
-    HudObject[] hudObjects;
+    List<HudObject> hudObjects;
     boolean verticallyStack = false;
     boolean centered = false;
     int xOffset;
     int yOffset;
 
-    public HudHelper(DrawContext context, HudPosition hudPosition, HudObject[] hudObjects, int xOffset, int yOffset) {
+    public HudHelper(DrawContext context, HudPosition hudPosition, List<HudObject> hudObjects, int xOffset, int yOffset) {
         this.context = context;
         this.hudPosition = hudPosition;
         this.hudObjects = hudObjects;
@@ -58,8 +60,8 @@ public class HudHelper {
             }
         }
 
-        for (int i = 0; i < hudObjects.length; i++) {
-            HudObject hudObject = hudObjects[i];
+        for (int i = 0; i < hudObjects.size(); i++) {
+            HudObject hudObject = hudObjects.get(i);
 
             if (centered) {
                 if (verticallyStack && hudObject.getWidth() != getMaxWidth()) {

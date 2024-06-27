@@ -13,12 +13,18 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolItem;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Mixin(InGameHud.class)
 public abstract class MixinInGameHud {
@@ -90,10 +96,10 @@ public abstract class MixinInGameHud {
 
             int count = howManyOfThisItem(heldItem);
 
-            HudObject[] hudObjects = {
+            List<HudObject> hudObjects = Arrays.asList(
                     new HudItem(client.player.getMainHandStack()),
                     new HudText(String.valueOf(count))
-            };
+            );
 
             hudHelper = new HudHelper(context, LightweightHUDConfig.heldItemHudPosition, hudObjects, LightweightHUDConfig.heldItemXOffset, LightweightHUDConfig.heldItemYOffset);
         } else if (isTool(heldItem)) {
@@ -115,10 +121,10 @@ public abstract class MixinInGameHud {
 
             int color = decideHeldItemDamageColor((int)durabilityPercentage);
 
-            HudObject[] hudObjects = {
+            List<HudObject> hudObjects = Arrays.asList(
                     new HudItem(client.player.getMainHandStack()),
                     new HudText(durability, color)
-            };
+            );
 
             hudHelper = new HudHelper(context, LightweightHUDConfig.heldItemHudPosition, hudObjects, LightweightHUDConfig.heldItemXOffset, LightweightHUDConfig.heldItemYOffset);
         }
@@ -131,25 +137,35 @@ public abstract class MixinInGameHud {
     }
 
     public void renderPlayerCoordinates(DrawContext context) {
-        if (!LightweightHUDConfig.showPlayerPosition) {
-            return;
-        }
-
         MinecraftClient client = MinecraftClient.getInstance();
-        Vec3d playerPos = client.player.getPos();
+        List<HudObject> hudObjects = new ArrayList<HudObject>();
 
-        if (playerPos == null) {
+        if (client.player == null) {
             return;
         }
 
-        String formattedPos = String.format("X: %.1f, Y: %.1f, Z: %.1f", playerPos.x, playerPos.y, playerPos.z);
+        if (LightweightHUDConfig.showPlayerPosition) {
+            Vec3d playerPos = client.player.getPos();
+            String formattedPos = String.format("X: %.1f, Y: %.1f, Z: %.1f", playerPos.x, playerPos.y, playerPos.z);
 
-        HudObject[] hudObjects = {
-                new HudText(formattedPos)
-        };
+            hudObjects.add(new HudText(formattedPos));
+        }
+
+        if (LightweightHUDConfig.showPlayerChunk) {
+            ChunkPos chunkPos = client.player.getChunkPos();
+            String formattedChunks = String.format("X: %d, Z: %d", chunkPos.x, chunkPos.z);
+
+            hudObjects.add(new HudText(formattedChunks));
+        }
+
+        if (LightweightHUDConfig.showPlayerDirection) {
+            Direction dir = client.player.getMovementDirection();
+
+            hudObjects.add(new HudText(dir.getName()));
+        }
 
         HudHelper hudHelper = new HudHelper(context, LightweightHUDConfig.playerPositionHudPosition, hudObjects, LightweightHUDConfig.playerNavigationXOffset, LightweightHUDConfig.playerNavigationYOffset);
-
+        hudHelper.setVerticallyStack(true);
         hudHelper.drawHud();
     }
 }
