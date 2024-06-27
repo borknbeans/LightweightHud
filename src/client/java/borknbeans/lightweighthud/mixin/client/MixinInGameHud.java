@@ -89,6 +89,10 @@ public abstract class MixinInGameHud {
         HudHelper hudHelper = null;
 
         if (isBlock(heldItem)) {
+            if (!LightweightHUDConfig.drawBlockCount) {
+                return;
+            }
+
             int count = howManyOfThisItem(heldItem);
 
             HudObject[] hudObjects = {
@@ -96,10 +100,24 @@ public abstract class MixinInGameHud {
                     new HudText(String.valueOf(count))
             };
 
-            hudHelper = new HudHelper(context, LightweightHUDConfig.heldItemHudPosition, hudObjects);
+            hudHelper = new HudHelper(context, LightweightHUDConfig.heldItemHudPosition, hudObjects, LightweightHUDConfig.heldItemXOffset, LightweightHUDConfig.heldItemYOffset);
         } else if (isTool(heldItem)) {
-            float durabilityPercentage =  ((float)(heldItem.getMaxDamage() - heldItem.getDamage()) / heldItem.getMaxDamage()) * 100f;
-            String durability = String.format("%.0f", durabilityPercentage) + "%";
+            if (!LightweightHUDConfig.drawToolDurability) {
+                return;
+            }
+
+            int damage = heldItem.getDamage();
+            int maxDurability = heldItem.getMaxDamage();
+
+            float durabilityPercentage =  ((float)(maxDurability - damage) / maxDurability) * 100f;
+
+            String durability;
+            if (LightweightHUDConfig.drawToolDurabilityAsPercentage) {
+                durability = String.format("%.0f", durabilityPercentage) + "%";
+            } else {
+                durability = String.format("%d/%d", maxDurability - damage, maxDurability);
+            }
+
             int color = decideHeldItemDamageColor((int)durabilityPercentage);
 
             HudObject[] hudObjects = {
@@ -107,7 +125,7 @@ public abstract class MixinInGameHud {
                     new HudText(durability, color)
             };
 
-            hudHelper = new HudHelper(context, LightweightHUDConfig.heldItemHudPosition, hudObjects);
+            hudHelper = new HudHelper(context, LightweightHUDConfig.heldItemHudPosition, hudObjects, LightweightHUDConfig.heldItemXOffset, LightweightHUDConfig.heldItemYOffset);
         }
 
         if (hudHelper != null) {
@@ -133,7 +151,7 @@ public abstract class MixinInGameHud {
                 new HudText(formattedPos)
         };
 
-        HudHelper hudHelper = new HudHelper(context, LightweightHUDConfig.playerPositionHudPosition, hudObjects);
+        HudHelper hudHelper = new HudHelper(context, LightweightHUDConfig.playerPositionHudPosition, hudObjects, LightweightHUDConfig.playerNavigationXOffset, LightweightHUDConfig.playerNavigationYOffset);
 
         hudHelper.drawHud();
     }

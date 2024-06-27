@@ -11,16 +11,18 @@ public class HudHelper {
     int xOffset; // TODO: Use
     int yOffset; // TODO: Use
 
-    public HudHelper(DrawContext context, HudPosition hudPosition, HudObject[] hudObjects) {
+    public HudHelper(DrawContext context, HudPosition hudPosition, HudObject[] hudObjects, int xOffset, int yOffset) {
         this.context = context;
         this.hudPosition = hudPosition;
         this.hudObjects = hudObjects;
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
     }
 
     public void drawHud() {
         int[] startPosition = hudPosition.getCoordinates();
-        int x = startPosition[0];
-        int y = startPosition[1];
+        int x = startPosition[0] + xOffset;
+        int y = startPosition[1] + yOffset;
 
         if (hudPosition.isOnRight()) { // Shift x position over the entire width
             x -= getWidth();
