@@ -146,14 +146,14 @@ public abstract class MixinInGameHud {
 
         if (LightweightHUDConfig.showPlayerPosition) {
             Vec3d playerPos = client.player.getPos();
-            String formattedPos = String.format("X: %.1f, Y: %.1f, Z: %.1f", playerPos.x, playerPos.y, playerPos.z);
+            String formattedPos = String.format("X: %.1f Y: %.1f Z: %.1f", playerPos.x, playerPos.y, playerPos.z);
 
             hudObjects.add(new HudText(formattedPos));
         }
 
         if (LightweightHUDConfig.showPlayerChunk) {
             ChunkPos chunkPos = client.player.getChunkPos();
-            String formattedChunks = String.format("X: %d, Z: %d", chunkPos.x, chunkPos.z);
+            String formattedChunks = String.format("X: %d Z: %d", chunkPos.x, chunkPos.z);
 
             hudObjects.add(new HudText(formattedChunks));
         }
