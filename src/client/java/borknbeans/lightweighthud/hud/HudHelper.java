@@ -8,8 +8,8 @@ public class HudHelper {
 
     HudPosition hudPosition;
     HudObject[] hudObjects;
-    int xOffset; // TODO: Use
-    int yOffset; // TODO: Use
+    int xOffset;
+    int yOffset;
 
     public HudHelper(DrawContext context, HudPosition hudPosition, HudObject[] hudObjects, int xOffset, int yOffset) {
         this.context = context;
