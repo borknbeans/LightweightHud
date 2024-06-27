@@ -1,6 +1,5 @@
 package borknbeans.lightweighthud.mixin.client;
 
-import borknbeans.lightweighthud.config.HudPosition;
 import borknbeans.lightweighthud.config.LightweightHUDConfig;
 import borknbeans.lightweighthud.hud.HudHelper;
 import borknbeans.lightweighthud.hud.HudItem;
@@ -21,14 +20,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-
 @Mixin(InGameHud.class)
 public abstract class MixinInGameHud {
 
     @Shadow public abstract void render(DrawContext context, RenderTickCounter tickCounter);
-
-    private final int TEXT_SPACING = 2;
 
     @Inject(method = "renderHotbar", at = @At("RETURN"))
     private void renderHotbar(DrawContext context, RenderTickCounter tickCounter, CallbackInfo ci) {
@@ -129,6 +124,8 @@ public abstract class MixinInGameHud {
         }
 
         if (hudHelper != null) {
+            hudHelper.setCentered(true);
+
             hudHelper.drawHud();
         }
     }

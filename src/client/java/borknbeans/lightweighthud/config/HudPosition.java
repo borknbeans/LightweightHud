@@ -86,4 +86,8 @@ public enum HudPosition {
     public boolean isOnMiddleHorizontal() {
         return this == TOP_MIDDLE || this == BOTTOM_MIDDLE;
     }
+
+    public boolean isOnMiddleVertical() {
+        return this == MIDDLE_RIGHT || this == MIDDLE_LEFT;
+    }
 }

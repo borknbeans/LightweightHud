@@ -8,6 +8,8 @@ public class HudHelper {
 
     HudPosition hudPosition;
     HudObject[] hudObjects;
+    boolean verticallyStack = false;
+    boolean centered = false;
     int xOffset;
     int yOffset;
 
@@ -24,27 +26,56 @@ public class HudHelper {
         int x = startPosition[0] + xOffset;
         int y = startPosition[1] + yOffset;
 
-        if (hudPosition.isOnRight()) { // Shift x position over the entire width
-            x -= getWidth();
+        if (hudPosition.isOnRight()) {
+            if (verticallyStack) {
+                x -= getMaxWidth();
+            } else {
+                x -= getWidth();
+            }
         }
 
         if (hudPosition.isOnMiddleHorizontal()) {
-            x -= getWidth() / 2;
+            if (verticallyStack) {
+                x -= getMaxWidth() / 2;
+            } else {
+                x -= getWidth() / 2;
+            }
+        }
+
+        if (hudPosition.isOnMiddleVertical()) {
+            if (verticallyStack) {
+                y -= getHeight() / 2;
+            } else {
+                y -= getMaxHeight() / 2;
+            }
         }
 
         if (hudPosition.isOnBottom()) {
-            y -= getHeight();
+            if (verticallyStack) {
+                y -= getHeight();
+            } else {
+                y -= getMaxHeight();
+            }
         }
 
         for (int i = 0; i < hudObjects.length; i++) {
             HudObject hudObject = hudObjects[i];
 
-            if (hudObject.getHeight() != getHeight()) { // If one item is taller than others, center the others
-                y = y + (getHeight() / 2) - (hudObject.getHeight() / 2);
+            if (centered) {
+                if (verticallyStack && hudObject.getWidth() != getMaxWidth()) {
+                    x = x + (getMaxWidth() / 2) - (hudObject.getWidth() / 2);
+                } else if (!verticallyStack && hudObject.getHeight() != getMaxHeight()) {
+                    y = y + (getMaxHeight() / 2) - (hudObject.getHeight() / 2);
+                }
             }
 
             hudObject.draw(context, x, y);
-            x += hudObject.getWidth(); // Move right as we draw
+
+            if (verticallyStack) {
+                y += hudObject.getHeight(); // Move down as we draw
+            } else {
+                x += hudObject.getWidth(); // Move right as we draw
+            }
         }
     }
 
@@ -58,7 +89,29 @@ public class HudHelper {
         return width;
     }
 
-    public int getHeight() { // Gets biggest height value TODO: Maybe change this
+    public int getHeight() {
+        int height = 0;
+
+        for (HudObject hudObject : hudObjects) {
+            height += hudObject.getHeight();
+        }
+
+        return height;
+    }
+
+    public int getMaxWidth() {
+        int width = 0;
+
+        for (HudObject hudObject : hudObjects) {
+            if (hudObject.getWidth() > width) {
+                width = hudObject.getWidth();
+            }
+        }
+
+        return width;
+    }
+
+    public int getMaxHeight() {
         int height = 0;
 
         for (HudObject hudObject : hudObjects) {
@@ -68,5 +121,15 @@ public class HudHelper {
         }
 
         return height;
+    }
+
+    public HudHelper setVerticallyStack(boolean verticallyStack) {
+        this.verticallyStack = verticallyStack;
+        return this;
+    }
+
+    public HudHelper setCentered(boolean centered) {
+        this.centered = centered;
+        return this;
     }
 }
