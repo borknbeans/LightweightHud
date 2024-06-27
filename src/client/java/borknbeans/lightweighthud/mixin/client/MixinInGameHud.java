@@ -44,6 +44,35 @@ public abstract class MixinInGameHud {
         return stack.getItem() instanceof ToolItem;
     }
 
+    private int howManyOfThisItem(ItemStack stack) {
+        int count = 0;
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        PlayerInventory inventory = client.player.getInventory();
+
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack s = inventory.getStack(i);
+
+            if (s.getItem() == stack.getItem()) {
+                count += s.getCount();
+            }
+        }
+
+        return count;
+    }
+
+    private int decideHeldItemDamageColor(int durabilityPercentage) {
+        if (durabilityPercentage < LightweightHUDConfig.heldItemVeryHighDamageThreshold) {
+            return LightweightHUDConfig.heldItemVeryHighDamageColor;
+        } else if (durabilityPercentage < LightweightHUDConfig.heldItemHighDamageThreshold) {
+            return LightweightHUDConfig.heldItemHighDamageColor;
+        } else if (durabilityPercentage < LightweightHUDConfig.heldItemSlightDamageThreshold) {
+            return LightweightHUDConfig.heldItemSlightDamageColor;
+        }
+
+        return 0xFFFFFF;
+    }
+
     public void renderHeldItem(DrawContext context) {
         if (!LightweightHUDConfig.showHeldItem) {
             return;
@@ -60,19 +89,22 @@ public abstract class MixinInGameHud {
         HudHelper hudHelper = null;
 
         if (isBlock(heldItem)) {
+            int count = howManyOfThisItem(heldItem);
+
             HudObject[] hudObjects = {
                     new HudItem(client.player.getMainHandStack()),
-                    new HudText(String.valueOf(client.player.getMainHandStack().getCount()))
+                    new HudText(String.valueOf(count))
             };
 
             hudHelper = new HudHelper(context, LightweightHUDConfig.heldItemHudPosition, hudObjects);
         } else if (isTool(heldItem)) {
-            float durabilityPercentage = ((float)heldItem.getDamage() / heldItem.getMaxDamage()) * 100f;
+            float durabilityPercentage =  ((float)(heldItem.getMaxDamage() - heldItem.getDamage()) / heldItem.getMaxDamage()) * 100f;
             String durability = String.format("%.0f", durabilityPercentage) + "%";
+            int color = decideHeldItemDamageColor((int)durabilityPercentage);
 
             HudObject[] hudObjects = {
                     new HudItem(client.player.getMainHandStack()),
-                    new HudText(durability)
+                    new HudText(durability, color)
             };
 
             hudHelper = new HudHelper(context, LightweightHUDConfig.heldItemHudPosition, hudObjects);
@@ -178,36 +210,11 @@ public abstract class MixinInGameHud {
         }
     }
 
-    private int howManyOfThisItem(ItemStack stack) {
-        int count = 0;
-
-        MinecraftClient client = MinecraftClient.getInstance();
-        PlayerInventory inventory = client.player.getInventory();
-
-        for (int i = 0; i < inventory.size(); i++) {
-            ItemStack s = inventory.getStack(i);
-
-            if (s.getItem() == stack.getItem()) {
-                count += s.getCount();
-            }
-        }
-
-        return count;
-    }
 
 
 
-    private int decideHeldItemDamageColor(int durabilityPercentage) {
-        if (durabilityPercentage < LightweightHUDConfig.heldItemVeryHighDamageThreshold) {
-            return LightweightHUDConfig.heldItemVeryHighDamageColor;
-        } else if (durabilityPercentage < LightweightHUDConfig.heldItemHighDamageThreshold) {
-            return LightweightHUDConfig.heldItemHighDamageColor;
-        } else if (durabilityPercentage < LightweightHUDConfig.heldItemSlightDamageThreshold) {
-            return LightweightHUDConfig.heldItemSlightDamageColor;
-        }
 
-        return 0x000000;
-    }
+
 
     private void renderNavigation(DrawContext context) {
         MinecraftClient client = MinecraftClient.getInstance();
