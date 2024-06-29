@@ -146,7 +146,7 @@ public abstract class MixinInGameHud {
 
         if (LightweightHUDConfig.showPlayerPosition) {
             Vec3d playerPos = client.player.getPos();
-            String formattedPos = String.format("X: %.1f Y: %.1f Z: %.1f", playerPos.x, playerPos.y, playerPos.z);
+            String formattedPos = String.format("%.1f, %.1f, %.1f", playerPos.x, playerPos.y, playerPos.z);
 
             hudObjects.add(new HudText(formattedPos));
         }

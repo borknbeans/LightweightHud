@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "lightweight-hud",
-	"version": "1.0.0-alpha",
+	"version": "1.0.0+1.21",
 	"name": "Lightweight HUD",
 	"description": "Lightweight HUD additions with no extra fluff",
 	"authors": [
@@ -11,7 +11,7 @@
 		"sources": "https://github.com/borknbeans/LightweightHud"
 	},
 	"license": "MIT",
-	"icon": "assets/lightweight-hud/icon.png",
+	"icon": "assets/lightweight-hud/logo.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
